@@ -4,7 +4,7 @@ from pathlib import Path
 
 from constants import *
 from converting.merging_utils import merge_subsections, merge_sections
-from global_utils import formatted_text, partition_chess
+from global_utils import formatted_text, partition_chess, resource_path
 from datastructure.datastructure_utils import merged_tree_from_list
 
 
@@ -67,8 +67,7 @@ def list_trees_to_latex(original_list_trees, granularity,
         raise Exception(f"Unknown granularity '{granularity}'")
 
     # We load the Latex template
-    BASE_DIR = Path(__file__).parent.parent
-    template_path = BASE_DIR / "main_template.tex"
+    template_path = resource_path("main_template.tex")
     with open(template_path, "r", encoding="utf-8") as f:
         latex_template = f.read()
 

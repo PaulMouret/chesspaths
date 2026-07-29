@@ -1,6 +1,7 @@
 from pathlib import Path
 import unicodedata
 import re
+import sys
 
 
 # FILE MANAGEMENT
@@ -29,6 +30,20 @@ def iter_depth(path, depth):
     for child in path.iterdir():
         if child.is_dir():
             yield from iter_depth(child, depth - 1)
+
+
+# A helper to load files even in a onefile executable
+def resource_path(relative_path):
+
+    if getattr(sys, "frozen", False):
+
+        base_path = Path(sys._MEIPASS)
+
+    else:
+
+        base_path = Path(__file__).resolve().parent.parent
+
+    return base_path / relative_path
 
 
 # HANDLING PGN

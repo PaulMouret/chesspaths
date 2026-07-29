@@ -14,3 +14,8 @@ To create the corresponding .exe :
 ```
 pyinstaller --onefile --windowed --name "ChessPaths" --icon=assets/app.ico --add-data "assets/app.ico;assets" --add-data "main_template.tex;." main.py
 ```
+
+I will update the workflow with
+on:
+  release:
+    types: [published]
