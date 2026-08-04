@@ -1,0 +1,58 @@
+\chapter{Motivation théorique du Dragon accéléré}
+
+\xskakset{level=1}
+\newchessgame
+
+\mainline{1. e4 c5 2. Nf3}
+
+\variation[invar]{2. c3 \xskakcomment{ la variante Alapine}} 
+\variation{2... d5 3. exd5 Qxd5 4. d4 \xskakcomment{ et là les variantes principales sont \varref{4...Nf6} , \varref{4...Nc6} , \varref{4...e6}}} 
+ 
+\mainline[outvar]{2... Nc6}
+
+\variation[invar]{2... d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6 \xskakcomment{ la variante Dragon}} 
+\variation{6. Be3 Bg7}
+(\variation[invar]{6... Ng4 $4 7. Bb5+ }) 
+\variation[outvar]{7. f3 O-O 8. Qd2 Nc6 9. O-O-O \xskakcomment{ Une ligne théorique compliquée, avec des bonnes chances blancs grâce à l'attaque à la baïonnette. Ici la ligne théorique est}} 
+\variation{9... d5 10. exd5 Nxd5 11. Nxc6 bxc6 12. Bd4 Bxd4}
+(\variation[invar]{12... e5 13. Bc5 Re8 14. Ne4 }) 
+\variation[outvar]{13. Qxd4 }
+
+\variation{2... g6 \xskakcomment{ le Dragon hyper-accéléré}} 
+\variation{3. c4 \xskakcomment{ l'étau de Maroczy à nouveau}}
+(\variation[invar]{3. c3 Bg7 4. d4 cxd4 5. cxd4 d5 6. e5 } ;
+\variation{3. d4 cxd4 4. Nxd4 Bg7 5. Nc3 Nc6 \xskakcomment{ transpose dans le Dragon accéléré, mais on a évité la variante Rossolimo}} ) 
+ 
+
+\mainline[outvar, outvar]{3. d4}
+
+\variation[invar]{3. Bb5 \xskakcomment{ la variante Rossolimo est autorisée par cet ordre de coups}} 
+ 
+\mainline[outvar]{3... cxd4 4. Nxd4 g6}
+\xskakset{level=2}
+le Dragon accéléré : l'idée est qu'on a retardé ...\wmove{d6} (tout en jouant un coup utile, ...\wmove{Nc6}, et sans jouer ...\wmove{g6} trop tôt cf. Dragon hyper-accéléré) afin de disposer de ...\wmove{d5} en un coup
+\xskakset{level=1} 
+\mainline{5. Nc3}
+
+\variation[invar]{5. c4 \xskakcomment{ l'étau de Maroczy est, en contrepartie, l'option supplémentaire qu'on donne aux Blancs}} 
+\variation{5... Bg7 6. Be3 Nf6 7. Nc3 d6 8. Be2 O-O 9. O-O }
+ 
+\mainline[outvar]{5... Bg7 6. Be3 Nf6}
+\xskakset{level=2}
+Et là
+\xskakset{level=1} 
+\mainline{7. f3 $6}
+
+\variation[invar]{7. Bc4 \xskakcomment{ est la ligne théorique}} 
+ 
+\mainline[outvar]{7... O-O 8. Qd2}
+
+\variation[invar]{8. Bc4 \xskakcomment{ pour empêcher ...\wmove{d5} se heurte à}} 
+\variation{8... Qb6 \xskakcomment{ attaque \wmove{b2} et rajoute une pression sur \wmove{d4}, menaçant le thématique ...\wmove{Nxe4}, sans que les Blancs ne disposent de bonne découverte car le Fou \wmove{e3} n'est pas protégé}} 
+\variation{9. Bb3 Nxe4 \xskakcomment{ et les Blancs ont de la chance de s'en sortir après}} 
+\variation{10. Nd5 Qa5+ 11. c3 Nc5 12. Nxc6 dxc6 13. Nxe7+ Kh8 14. Nxc8 Raxc8 }
+ 
+\mainline[outvar]{8... d5 $1}
+\xskakset{level=2}
+On a simplement gagné un temps par rapport au Dragon classique.
+\xskakset{level=1} 

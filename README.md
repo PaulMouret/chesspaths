@@ -2,13 +2,19 @@
 
 ChessPaths is a program intended to convert PGNs and LaTex projects into
 PGNs or LaTeX projects, 
-optionally performing merges of the games in the considered file.
+optionally merging the games for a specified granularity level.
 
 For a direct usage of the program, go to [Documentation](#Documentation).
 For working on the Python code, go to 
 [Installation of the Python project](#installation-of-the-python-project).
 
 ## Documentation
+
+### Installation
+
+On the [GitHub page of the project](https://github.com/PaulMouret/chesspaths),
+go to Releases. Select the latest release and, from its assets,
+download the program corresponding to your operating system.
 
 ### Main features
 
@@ -22,7 +28,7 @@ out of 1 PGN file, or 1 PGN folder,
 out of 1 PGN folder, creates 1 PGN file for each PGN file in the folder.
 
 - `LaTeX chapter ⟶ PGN` :
-out of 1 LaTeX file, creates 1 PGN file containing all the games written in LaTeX.
+out of 1 LaTeX file, creates 1 PGN file.
 
 - `LaTeX project ⟶ PGNs (1 per chapter)` :
 out of 1 LaTeX project, creates 1 PGN file for each LaTex file in the folder.
@@ -73,20 +79,102 @@ Moreover, since this program is based on my use case, any input LaTeX project is
 supposed to follow my conventions : it should be a repertoire, whose color is specified,
 and no alternative should be provided for our side, 
 except possibly inside a `\textcolor{bleufonce}{}` command.
-Note those conditions only apply to **input** LaTeX project : there is no 
+Note those conditions only apply to **input** LaTeX projects : there is no 
 such prerequisite for generating a LaTeX project from PGNs.
 (When generating a LaTeX project from PGNs, the optional `repertoire color` argument
 is only used to create the title page.)
 
-Lastly, this program enables to manage the granularity of the created files.
+Lastly, this program enables to manage the granularity, which refers to 
+how games are grouped in the resulting file.
+(When two games are grouped together, the mainline and variations of the second 
+are naturally included in the first one.)
+Indeed, we expect LaTeX projects to be grouped into chapters, sections and subsections.
+Similarly, an input PGN should indicate, for each game, the chapter in the field `White`,
+the section in the field `Black` and, optionally following the section,
+the subsection with the suffix \# followed by the subsection name.
+Typically, for a PGN encoding an opening repertoire, 
+we expect it to be structured in the following fashion :
 
-| Chapter | Section |
+| White (chapter) | Black (section \# subsection) |
 |----------|----------|
-| Item 1   | Description 1 |
-| Item 2   | Description 2 |
-| Item 3   | Description 3 |
+| Advance variation   | Tal variation \# 1 |
+| Advance variation   | Tal variation \# 2 |
+| Advance variation   | Short variation \# 1 |
+| Advance variation   | Short variation \# 2 |
+| Exchange variation   | variation 4.Bd3 |
+| Exchange variation   | variation 4.c3 |
+
+From there, the argument `granularity` controls how games are aggregated :
+- `chapter` : all sections (of the same chapter) are merged into one chapter.
+  For instance, the previous example would become :
+  
+| White (chapter) | Black (section \# subsection) |
+|----------|----------|
+| Advance variation   | all sections |
+| Exchange variation   | all sections |
+
+- `section` : all subsections are merged into one section.
+  For instance, the previous example would become :
+  
+| White (chapter) | Black (section \# subsection) |
+|----------|----------|
+| Advance variation   | Tal variation |
+| Advance variation   | Short variation |
+| Exchange variation   | variation 4.Bd3 |
+| Exchange variation   | variation 4.c3 |
+
+- `single` : all games are merged into a single one.
+- `all` : the organization is preserved as it is.
+
+### Example
+
+From [`example_chesspaths.pgn`](examples/example_chesspaths.pgn):
+
+```text
+[White "Motivation théorique du Dragon accéléré"]
+[Black "?"]
+[Result "*"]
+
+1. e4 c5 2. Nf3 (2. c3 { la variante Alapine } 2... d5 3. exd5 Qxd5 4. d4 { et là les variantes principales sont 4...Nf6, 4...Nc6, 4...e6 }) 2... Nc6 (2... d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 g6 { la variante Dragon } 6. Be3 Bg7 (6... Ng4?? 7. Bb5+) 7. f3 O-O 8. Qd2 Nc6 9. O-O-O { Une ligne théorique compliquée, avec des bonnes chances blancs grâce à l'attaque à la baïonnette. Ici la ligne théorique est : } 9... d5 10. exd5 Nxd5 11. Nxc6 bxc6 12. Bd4 Bxd4 (12... e5 13. Bc5 Re8 14. Ne4) 13. Qxd4) (2... g6 { le Dragon hyper-accéléré } 3. c4 { l'étau de Maroczy à nouveau } (3. c3 Bg7 (3... d5 4. exd5 Qxd5 5. d4 Bg7 { semble jouable, mais c'est quand même un set-up sous-optomal contre l'Alapine }) 4. d4 cxd4 5. cxd4 d5 6. e5) (3. d4 cxd4 4. Nxd4 (4. Qxd4 Nf6 5. Nc3 { avec la menace e5 } 5... Nc6 6. Qa4 d6 7. e5 dxe5 8. Nxe5 { avec pression blanche }) 4... Bg7 5. Nc3 Nc6 { transpose dans le Dragon accéléré, mais on a évité la variante Rossolimo })) 3. d4 (3. Bb5 { la variante Rossolimo est autorisée par cet ordre de coups }) 3... cxd4 4. Nxd4 g6 { le Dragon accéléré : l'idée est qu'on a retardé ...d6 (tout en jouant un coup utile, ...Nc6, et sans jouer ...g6 trop tôt cf. Dragon hyper-accéléré) afin de disposer de ...d5 en un coup } 5. Nc3 (5. c4 { l'étau de Maroczy est, en contrepartie, l'option supplémentaire qu'on donne aux Blancs } 5... Bg7 6. Be3 Nf6 7. Nc3 d6 8. Be2 O-O 9. O-O) 5... Bg7 6. Be3 Nf6 { Et là : } 7. f3?! (7. Bc4 { est la ligne théorique }) 7... O-O 8. Qd2 (8. Bc4 { pour empêcher ...d5 se heurte à } 8... Qb6 { attaque b2 et rajoute une pression sur d4, menaçant le thématique ...Nxe4, sans que les Blancs ne disposent de bonne découverte car le Fou e3 n'est pas protégé } 9. Bb3 Nxe4 { et les Blancs ont de la chance de s'en sortir après } 10. Nd5 Qa5+ 11. c3 Nc5 12. Nxc6 dxc6 13. Nxe7+ Kh8 14. Nxc8 Raxc8) 8... d5! { On a simplement gagné un temps par rapport au Dragon classique. } *
+
+[White "Puzzles"]
+[Black "Puzzle 1"]
+[Result "*"]
+[FEN "r1r3k1/1p1qppbp/p2p1np1/8/2P1P3/1PNQBP2/P5PP/R4RK1 b - - 0 14"]
+
+14... b5! 15. cxb5 Rxc3 16. Qxc3 Nd5 (16... Nxe4? 17. Qd3 Bxa1 18. Rxa1) (16... Nh5? 17. Qc6 Qxc6 18. bxc6 Bxa1 19. Rxa1) 17. Qd2 Nxe3 18. Qxe3 Bxa1 19. Rxa1 axb5 { Les Noirs ont égalisé en force. } *
+
+[White "Puzzles"]
+[Black "Puzzle 2"]
+[Result "*"]
+[FEN "r1r3k1/1p2ppbp/p2pbnp1/q7/2PBP3/1PN2P2/P2QB1PP/2R2RK1 b - - 1 14"]
+
+14... b5! { Casse l'étau de Maroczy : le pion est protégé tactiquement. } 15. cxb5 axb5 16. Bxb5? Rxc3! { La pointe. } 17. Rxc3 Qxb5 *
+
+```
+
+our program is able to generate [`example_project/`](examples/example_project/),
+that once compiled renders the following pdf :
+
+<table>
+  <tr>
+    <td><img src="examples/example_pdf_images/page_1.jpg" width="350"></td>
+    <td><img src="examples/example_pdf_images/page_3.jpg" width="350"></td>
+  </tr>
+  <tr>
+    <td><img src="examples/example_pdf_images/page_5.jpg" width="350"></td>
+    <td><img src="examples/example_pdf_images/page_7.jpg" width="350"></td>
+  </tr>
+</table>
 
 ## Installation of the Python project
+
+Clone the project in the desired directory :
+
+```
+git clone https://github.com/PaulMouret/chesspaths.git
+cd chesspaths
+```
 
 You need to install the required packages. The recommended way is :
 

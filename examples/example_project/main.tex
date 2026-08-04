@@ -1,0 +1,109 @@
+\documentclass[a4paper, 12pt,DIV=13, twoside=semi, openright]{scrreprt}
+
+% Modules loaded by SCID ; in particular xskak
+\usepackage{microtype}
+\usepackage{multirow}
+\usepackage{charter}
+\usepackage[svgnames]{xcolor}
+\usepackage{xskak}
+\usepackage{latexsym}
+\usepackage{pstricks-add}
+\usepackage{tabularx}
+
+% Necessary modules for almost any LaTeX project
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{appendix} % for appendix
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue}
+
+%For the quotation marks (French guillemets)
+\usepackage[
+    left = \flqq{},% 
+    right = \frqq{},% 
+    leftsub = \flq{},% 
+    rightsub = \frq{} %
+]{dirtytalk}
+% used with \say{blabla}
+
+% Useful commands defined by SCID
+\newcommand{\win}{1-0}
+\newcommand{\loss}{0-1}  
+\newcommand{\draw}{=-=}  
+\newcommand{\p}{\figsymbol{p}}
+\newcommand{\N}{\figsymbol{N}}
+\newcommand{\B}{\figsymbol{B}}
+\newcommand{\R}{\figsymbol{R}}
+\newcommand{\Q}{\figsymbol{Q}}
+\newcommand{\K}{\figsymbol{K}}
+
+% My commands
+\usepackage{chessfss}
+\usepackage{adjustbox}
+
+\newcommand{\pawnB}[1][1.3ex]{%
+\adjustbox{Trim=4.3pt 2.6pt 4.3pt 0pt,width=#1,margin=0.2ex 0ex 0.2ex 0ex}{\BlackPawnOnWhite}%
+}%
+
+\newcommand{\symbolediag}{\textit{(D)}}
+\newcommand{\nouveaute}{\textit{(N)}}
+
+\newcommand{\varref}[1]{\variation{#1}}
+% so that, when parsing the text, "references to variations" (which should be interpreted as comments rather than actual variations) are not mistaken with variations
+\newcommand{\varrefinvar}[1]{\variation[invar]{#1}}
+\newcommand{\varrefoutvar}[1]{\variation[outvar]{#1}}
+
+\definecolor{bleufonce}{RGB}{0,0,150}
+
+% Commands for title
+\providecommand{\HUGE}{\Huge}% if not using memoir
+\newlength{\drop}% for my convenience
+%% select a (FontSite) font by its font family ID
+\newcommand*{\FSfont}[1]{\fontencoding{T1}\fontfamily{#1}\selectfont}
+%% if you don’t have the FontSite fonts either \renewcommand*{\FSfont}[1]{}
+%% or use your own choice of family.
+%% select a (TeX Font) font by its font family ID
+\newcommand*{\TXfont}[1]{\fontencoding{T1}\fontfamily{#1}\selectfont}
+
+% Commands for my own title format
+\newcommand*{\titlePP}{\begingroup% Printing Poetry
+\FSfont{5jr}% FontSite Jenson Recut (Centaur)
+\drop=0.1\textheight
+\vspace*{\drop}
+\begin{raggedleft}
+{\HUGE Répertoire noir \pawnB}\\[2\baselineskip]
+{\HUGE Dragon accéléré}\\[\baselineskip]
+{\HUGE (\varref{1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 g6})}\\[\baselineskip]\par
+\end{raggedleft}
+\vfill
+\begin{center}
+{\large ChessPaths}
+\end{center}
+\vspace*{\drop}
+%\mbox{}
+\endgroup}
+
+\begin{document}
+\xskakset{style=UF}
+
+\begin{titlepage}
+\titlePP
+\end{titlepage}
+
+\tableofcontents
+
+\twocolumn
+
+\input{Motivation_theorique_du_Dragon_accelere/Motivation_theorique_du_Dragon_accelere}
+\input{Puzzles/Puzzles}
+
+
+% be careful to compilation duration
+
+\end{document}
