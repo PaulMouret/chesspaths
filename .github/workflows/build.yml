@@ -1,12 +1,14 @@
 name: Build ChessPaths
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types:
+      - published
 
   workflow_dispatch:
 
+permissions:
+  contents: write
 
 jobs:
 
@@ -21,15 +23,9 @@ jobs:
         include:
 
           - os: windows-latest
-            artifact_name: ChessPaths-Windows
             icon: assets/app.ico
 
-          - os: ubuntu-latest
-            artifact_name: ChessPaths-Linux
-            icon: assets/app.png
-
           - os: macos-latest
-            artifact_name: ChessPaths-macOS
             icon: assets/app.icns
 
 
@@ -97,28 +93,17 @@ jobs:
             --add-data "main_template.tex;." \
             main.py
 
+      - name: Rename Windows executable
 
-      # --------------------------------------------------------
-      # Build Linux
-      # --------------------------------------------------------
-
-      - name: Build Linux executable
-
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'windows-latest'
 
         shell: bash
 
         run: |
 
-          pyinstaller \
-            --clean \
-            --onefile \
-            --windowed \
-            --name ChessPaths \
-            --icon "${{ matrix.icon }}" \
-            --add-data "assets/app.png:assets" \
-            --add-data "main_template.tex:." \
-            main.py
+          mv \
+            dist/ChessPaths.exe \
+            dist/ChessPaths-${{ github.ref_name }}-Windows.exe
 
 
       # --------------------------------------------------------
@@ -157,50 +142,32 @@ jobs:
 
           cd dist
 
-          zip -r ChessPaths-macOS.zip ChessPaths.app
-
+          zip -r \
+            ChessPaths-${{ github.ref_name }}-macOS.zip \
+            ChessPaths.app
 
 
       # --------------------------------------------------------
       # Upload artifacts
       # --------------------------------------------------------
 
-      - name: Upload Windows artifact
+      - name: Upload Windows executable
 
         if: matrix.os == 'windows-latest'
 
-        uses: actions/upload-artifact@v4
+        uses: softprops/action-gh-release@v2
 
         with:
 
-          name: ${{ matrix.artifact_name }}
-
-          path: dist/ChessPaths.exe
+          files: dist/ChessPaths-${{ github.ref_name }}-Windows.exe
 
 
-
-      - name: Upload Linux artifact
-
-        if: matrix.os == 'ubuntu-latest'
-
-        uses: actions/upload-artifact@v4
-
-        with:
-
-          name: ${{ matrix.artifact_name }}
-
-          path: dist/ChessPaths
-
-
-
-      - name: Upload macOS artifact
+      - name: Upload macOS application
 
         if: matrix.os == 'macos-latest'
 
-        uses: actions/upload-artifact@v4
+        uses: softprops/action-gh-release@v2
 
         with:
 
-          name: ${{ matrix.artifact_name }}
-
-          path: dist/ChessPaths-macOS.zip
+          files: dist/ChessPaths-${{ github.ref_name }}-macOS.zip
