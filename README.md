@@ -224,7 +224,7 @@ Several LaTeX compilers are freely available (which also serve as editors):
   
 - online compilers such as [Overleaf](https://www.overleaf.com).
 Note that free accounts usually have limitations, such as compilation time restrictions,
-  that prevent you to compile large projects online.
+  that prevent you from compiling large projects online.
 
 [xskak](https://texdoc.org/serve/xskak/0) is a LaTeX library
 that handles chess commands.
