@@ -1,8 +1,7 @@
 import os
 
 from global_utils import is_trivial_pgn, formatted_text
-from converting.merging_utils import merge_subsections, merge_sections
-from datastructure.datastructure_utils import merged_tree_from_list
+from converting.merging_utils import get_grained_list_trees
 
 
 def list_trees_to_pgn(list_trees, new_pgn_dir, new_pgn_name, granularity, verbosity=True):
@@ -15,14 +14,7 @@ def list_trees_to_pgn(list_trees, new_pgn_dir, new_pgn_name, granularity, verbos
     new_pgn_name = formatted_text(new_pgn_name)
 
     # We convert the list_trees into the correct granularity
-    if granularity == "chapter":
-        list_trees = merge_sections(list_trees)
-    elif granularity == "section":
-        list_trees = merge_subsections(list_trees)
-    elif granularity == "single":
-        list_trees = [merged_tree_from_list(list_trees)]
-    elif granularity != "all":
-        raise Exception(f"Unknown granularity '{granularity}'")
+    list_trees = get_grained_list_trees(list_trees, granularity)
 
     list_clean_pgns = []
     for tree in list_trees:

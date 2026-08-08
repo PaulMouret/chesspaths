@@ -3,9 +3,8 @@ import re
 from pathlib import Path
 
 from constants import *
-from converting.merging_utils import merge_subsections, merge_sections
+from converting.merging_utils import get_grained_list_trees
 from global_utils import formatted_text, partition_chess, resource_path
-from datastructure.datastructure_utils import merged_tree_from_list
 
 
 def get_title_command(repertoire_color, author, title, title_moves,
@@ -57,14 +56,7 @@ def list_trees_to_latex(original_list_trees, granularity,
     # Possible values for granularity are "chapter", "section" - if not, we let the list as it is
 
     # We convert the list_trees into the correct granularity
-    if granularity == "chapter":
-        original_list_trees = merge_sections(original_list_trees)
-    elif granularity == "section":
-        original_list_trees = merge_subsections(original_list_trees)
-    elif granularity == "single":
-        original_list_trees = [merged_tree_from_list(original_list_trees)]
-    elif granularity != "all":
-        raise Exception(f"Unknown granularity '{granularity}'")
+    original_list_trees = get_grained_list_trees(original_list_trees, granularity)
 
     # We load the Latex template
     template_path = resource_path("main_template.tex")

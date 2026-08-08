@@ -43,3 +43,17 @@ def merge_sections(list_trees):
     # Now all subsections from the same section have the same name
     final_list_trees = get_list_trees_with_unique_white_black(renamed_list_trees)
     return final_list_trees
+
+
+# The final util function
+def get_grained_list_trees(list_trees, granularity):
+    # We convert the list_trees into the correct granularity
+    if granularity == "chapter":
+        list_trees = merge_sections(list_trees)
+    elif granularity == "section":
+        list_trees = merge_subsections(list_trees)
+    elif granularity == "single":
+        list_trees = [merged_tree_from_list(list_trees)]
+    elif granularity != "all":
+        raise Exception(f"Unknown granularity '{granularity}'")
+    return list_trees

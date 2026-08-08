@@ -3,6 +3,7 @@ import os
 from converting.pgn_to_tree import pgn_to_list_trees
 from converting.tree_to_pgn import list_trees_to_pgn
 from global_utils import list_files, basename, formatted_text
+from converting.merging_utils import get_grained_list_trees
 
 
 def clean_pgn(pgn_path, clean_dir, new_granularity, new_name=None, encoding="utf-8", verbosity=True):
@@ -63,6 +64,9 @@ def expand_pgn(pgn_path, clean_dir, new_granularity, new_folder_name=None, encod
     new_pgn_folder_name = new_folder_name if new_folder_name is not None else basename(pgn_path)
     new_pgn_dir = os.path.join(clean_dir, new_pgn_folder_name)
     list_trees = pgn_to_list_trees(pgn_path=pgn_path, encoding=encoding)
+    # Here we need to convert the list_trees into the correct granularity beforehand
+    list_trees = get_grained_list_trees(list_trees, new_granularity)
+
     # We need to keep track of the names of the PGNs that are created, in case there are doubles
     dict_names = dict()
     for tree in list_trees:
