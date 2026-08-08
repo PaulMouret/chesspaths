@@ -27,6 +27,9 @@ out of 1 PGN file, or 1 PGN folder,
 
 - `PGNs ⟶ PGNs (1 per original PGN)` :
 out of 1 PGN folder, creates 1 PGN file for each PGN file in the folder.
+  
+- `PGN(s) ⟶ PGNs (1 per game)` :
+out of 1 PGN file, or 1 PGN folder, creates 1 PGN file for each game.
 
 - `LaTeX chapter ⟶ PGN` :
 out of 1 LaTeX file, creates 1 PGN file.

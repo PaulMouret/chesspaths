@@ -7,6 +7,7 @@ from interface.pgn_from_latex_chapter_window import create_function_3_window
 from interface.pgns_from_latex_project_window import create_function_4_window
 from interface.clean_latex_project_window import create_function_5_window
 from interface.latex_from_pgn_window import create_function_6_window
+from interface.expand_pgn_window import create_function_7_window
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -23,7 +24,7 @@ root.title(
 )
 
 root.geometry(
-    "400x300"
+    "400x350"
 )
 
 root.iconbitmap(ICON_PATH)
@@ -119,6 +120,21 @@ def open_function_6():
 
 
 # ============================================================
+# OPEN FUNCTION 6
+# ============================================================
+
+def open_function_7():
+
+    popup = tk.Toplevel(
+        root
+    )
+
+    create_function_7_window(
+        popup
+    )
+
+
+# ============================================================
 # BUTTONS
 # ============================================================
 
@@ -142,6 +158,17 @@ button_2 = tk.Button(
 )
 
 button_2.pack(
+    pady=10
+)
+
+button_7 = tk.Button(
+    root,
+    text="PGN(s) ⟶ PGNs (1 per game)",
+    command=open_function_7,
+    width=30
+)
+
+button_7.pack(
     pady=10
 )
 
