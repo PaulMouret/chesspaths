@@ -28,56 +28,60 @@ def latex_chapter_to_list_trees(latex_chapter_path, repertoire_color):
         white_header = game['chapter']
         black_header = f"{game['section'] if game['section'] is not None else ''} # {game['subsection'] if game['subsection'] is not None else ''}"
         latex_identifier = f"{game['file_path']} - {white_header} - {black_header}"
+        print(f"\n# {latex_identifier}...")
         file_section = game['latex']
 
-        # We remove comments, since they might contain uncorrected text
-        file_section = remove_comments(file_section)
-        # We remove the \textcolor{bleufonce}{} commands and their content, since they correspond to
-        # alternatives for my side
-        file_section = file_section.replace("textcolor{bleufonce}", "textcolor_bleufonce")
-        file_section = remove_command(file_section, "textcolor_bleufonce")
-        # We expect the .tex files to be cleaned (manually, or using the cleaning_latex_files/ module) so that
-        # (except possibly in the \textcolor{bleufonce}{} blocks, which have been previously removed)
-        # the \variation{} commands only contain proper variations to store
-        # (in opposition to references used to comment, that should use \varref{} instead)
-        # We remove commands potentially containing noisy \variation{}
-        file_section = replace_variation_in_xskakcomment(file_section)  # so we don't have to remove xskakcomment
-        commands_to_remove = ["chapter", "section", "subsection", "subsubsection", "input"]
-        for command in commands_to_remove:
-            file_section = remove_command(file_section, command)
-        # We force \footnote to be preceded by a space (as in my code I may glue them to a move, causing an error)
-        file_section = re.sub(r'(?<!\s)\\footnote', r' \\footnote', file_section)
-        # And, because they may be inside variations, the most secure is to remove footnotes :
-        file_section = remove_command(file_section, 'footnote')
+        try:
+            # We remove comments, since they might contain uncorrected text
+            file_section = remove_comments(file_section)
+            # We remove the \textcolor{bleufonce}{} commands and their content, since they correspond to
+            # alternatives for my side
+            file_section = file_section.replace("textcolor{bleufonce}", "textcolor_bleufonce")
+            file_section = remove_command(file_section, "textcolor_bleufonce")
+            # We expect the .tex files to be cleaned (manually, or using the cleaning_latex_files/ module) so that
+            # (except possibly in the \textcolor{bleufonce}{} blocks, which have been previously removed)
+            # the \variation{} commands only contain proper variations to store
+            # (in opposition to references used to comment, that should use \varref{} instead)
+            # We remove commands potentially containing noisy \variation{}
+            file_section = replace_variation_in_xskakcomment(file_section)  # so we don't have to remove xskakcomment
+            commands_to_remove = ["chapter", "section", "subsection", "subsubsection", "input"]
+            for command in commands_to_remove:
+                file_section = remove_command(file_section, command)
+            # We force \footnote to be preceded by a space (as in my code I may glue them to a move, causing an error)
+            file_section = re.sub(r'(?<!\s)\\footnote', r' \\footnote', file_section)
+            # And, because they may be inside variations, the most secure is to remove footnotes :
+            file_section = remove_command(file_section, 'footnote')
 
-        # Now we retrieve all \mainline{} and \variation{} commands in the text as an ordered list of the form
-        # [('mainline', '1.c4 e5 $1 \xskakcomment{ good}'), ('variation', '1...c5'), ('comment', ' is winning')]
-        # N.B. : The notation is expected to be the SAN, same as PGN (for instance promotion is written as =)
-        section_commands = extract_chess_commands(file_section)
-        section_commands = move_chessboard_comments(section_commands)
-        latex_sequence_list = move_xskakcomments(section_commands)  # now it is a proper 'sequence list'
-        latex_sequence_list = clean_latex_sequence_list(latex_sequence_list)
+            # Now we retrieve all \mainline{} and \variation{} commands in the text as an ordered list of the form
+            # [('mainline', '1.c4 e5 $1 \xskakcomment{ good}'), ('variation', '1...c5'), ('comment', ' is winning')]
+            # N.B. : The notation is expected to be the SAN, same as PGN (for instance promotion is written as =)
+            section_commands = extract_chess_commands(file_section)
+            section_commands = move_chessboard_comments(section_commands)
+            latex_sequence_list = move_xskakcomments(section_commands)  # now it is a proper 'sequence list'
+            latex_sequence_list = clean_latex_sequence_list(latex_sequence_list)
 
-        # Now latex_sequence_list is clean
-        print(f"\n# {latex_identifier}...\n{latex_sequence_list}")  # enables to quickly identify location of fails
-        # If it is an actual section (ie. if it contains a mainline), we build the corresponding tree object
-        # If there are mistakes in the .tex files, they will raise an error here, or when opening the pgn,
-        # so they will be easily identified and thus can be manually corrected
-        if any(item[0] == 'mainline' for item in latex_sequence_list):
-            # Important requirements :
-            # - any variation should contain at least a reply
-            # - any variation should end with a move from our side
-            # - there is no alternative for our side
-            # - the \variation command only correspond to actual variations
-            # (and not references that serve as comment)
-            # so that the order of variations is preserved (a reference to 1...c5 in the variation 5.c4 would break
-            # this order)
-            # - for the parsing to work, the first move of a sequence should be attached to the preceding dot
-            section_tree = Tree(repertoire_color=repertoire_color)
-            headers = {'White': white_header, 'Black': black_header}
-            section_tree.update_headers(headers)
-            section_tree.init_from_latex_sequence_list(latex_sequence_list, source_latex_name=latex_identifier)
-            list_trees.append(section_tree)
+            # Now latex_sequence_list is clean
+            print(f"{latex_sequence_list}")  # enables to quickly identify location of fails
+            # If it is an actual section (ie. if it contains a mainline), we build the corresponding tree object
+            # If there are mistakes in the .tex files, they will raise an error here, or when opening the pgn,
+            # so they will be easily identified and thus can be manually corrected
+            if any(item[0] == 'mainline' for item in latex_sequence_list):
+                # Important requirements :
+                # - any variation should contain at least a reply
+                # - any variation should end with a move from our side
+                # - there is no alternative for our side
+                # - the \variation command only correspond to actual variations
+                # (and not references that serve as comment)
+                # so that the order of variations is preserved (a reference to 1...c5 in the variation 5.c4 would break
+                # this order)
+                # - for the parsing to work, the first move of a sequence should be attached to the preceding dot
+                section_tree = Tree(repertoire_color=repertoire_color)
+                headers = {'White': white_header, 'Black': black_header}
+                section_tree.update_headers(headers)
+                section_tree.init_from_latex_sequence_list(latex_sequence_list, source_latex_name=latex_identifier)
+                list_trees.append(section_tree)
+        except Exception as error:
+            raise Exception(f"The following error happened when reading {latex_identifier} :\n{error}")
 
     return list_trees
 

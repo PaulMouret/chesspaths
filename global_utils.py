@@ -96,13 +96,31 @@ def quote(s):
 # CHESS MOVES
 
 # Simplified SAN
+# French and English piece initials:
+#
+# English: K Q R B N
+# French:  R D T F C
+#
+# R is deliberately ambiguous: we keep it as R.
 MOVE = (
     r'(?:'
     r'O-O-O|'
     r'O-O|'
-    r'[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?'
+    r'[KQRBNDFCT]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBNDFCT])?'
     r')'
 )
+
+# Convert French piece notation to English.
+FRENCH_TO_ENGLISH = str.maketrans({
+    "D": "Q",   # Dame -> Queen
+    "F": "B",   # Fou -> Bishop
+    "C": "N",   # Cavalier -> Knight
+    "T": "R",   # Tour -> Rook
+})
+def normalize_move(move):
+    """Convert French chess notation to English notation."""
+    return move.translate(FRENCH_TO_ENGLISH)
+
 
 # A numbered move
 NUMBERED = rf'\d+\.(?:\.\.)?\s*{MOVE}'
@@ -128,14 +146,46 @@ def partition_chess(text):
 
 
 MOVE_RE = re.compile(MOVE)
+
+# A sequence of moves, connected by "/" or "-".
+MOVE_SEQUENCE_RE = re.compile(
+    rf'{MOVE}(?:[/-]{MOVE})*'
+)
+
+# A black sequence: "..." followed immediately by a move sequence.
+BLACK_MOVE_SEQUENCE_RE = re.compile(
+    rf'\.\.\.{MOVE_SEQUENCE_RE.pattern}'
+)
+
+
 def partition_moves(text):
     parts = []
     pos = 0
 
-    for m in MOVE_RE.finditer(text):
+    while pos < len(text):
+        black_match = BLACK_MOVE_SEQUENCE_RE.search(text, pos)
+        white_match = MOVE_SEQUENCE_RE.search(text, pos)
+
+        matches = [
+            m for m in (black_match, white_match)
+            if m is not None
+        ]
+
+        if not matches:
+            break
+
+        m = min(matches, key=lambda m: m.start())
+
         if m.start() > pos:
             parts.append(("normal", text[pos:m.start()]))
-        parts.append(("move", m.group()))
+
+        if m is black_match:
+            # Remove the leading "..." before passing the sequence
+            # to \bmove.
+            parts.append(("bmove", m.group()[3:]))
+        else:
+            parts.append(("move", m.group()))
+
         pos = m.end()
 
     if pos < len(text):
@@ -149,11 +199,18 @@ def clean_chess_in_text(text):  # for LaTeX
     clean_parsed_text = []
     for kind, content in parsed_text:
         if kind == "chess":
-            clean_parsed_text.append(f"\\varref{{{content}}}")
+            clean_parsed_text.append(f"\\varref{{{normalize_move(content)}}}")
         else:
             # In the rest of the text, there might still be chess moves. So :
             rest_parsed_text = partition_moves(content)
-            cleaned_rest_parsed_text = [(f"\\wmove{{{content}}}" if kind == "move" else content) for kind, content in rest_parsed_text]
+            cleaned_rest_parsed_text = []
+            for skind, scontent in rest_parsed_text:
+                if skind == "move":
+                    cleaned_rest_parsed_text.append(f"\\wmove{{{normalize_move(scontent)}}}")
+                elif skind == "bmove":
+                    cleaned_rest_parsed_text.append(f"\\bmove{{{normalize_move(scontent)}}}")
+                else:
+                    cleaned_rest_parsed_text.append(normalize_move(scontent))
             clean_parsed_text.append("".join(cleaned_rest_parsed_text))
             #clean_parsed_text.append(content) is the easy way
     spaced_text = " ".join(clean_parsed_text)

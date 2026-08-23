@@ -111,10 +111,12 @@ def list_trees_to_latex(original_list_trees, granularity,
             print(f"Writing chapter {chapter_path}...")
             chapters_inclusion_command += f"\\input{{{chapter_keyword}/{chapter_keyword}}}\n"
             cleaned_chapter = clean_title(chapter)
-            stuff_to_write += f"\\chapter{{{cleaned_chapter}}}\n"  # we remove the index of chapter
+            stuff_to_write += f"\\xskakset{{level=2}}\n" \
+                              f"\\chapter{{{cleaned_chapter}}}\n"  # we remove the index of chapter
         if chapter_len_dict[chapter] > 1:
             cleaned_section = clean_title(section)
-            stuff_to_write += f"\n\\section{{{cleaned_section}}}\n"  # we remove the index of section
+            stuff_to_write += f"\n\\xskakset{{level=2}}\n" \
+                              f"\\section{{{cleaned_section}}}\n"  # we remove the index of section
         stuff_to_write += f"\n{chapter_content}\n"
         # We actually write files
         with open(chapter_path, "a", encoding="utf-8") as f:

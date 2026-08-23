@@ -26,7 +26,7 @@ def clean_latex_project(latex_project_path, clean_dir, new_granularity,
     new_latex_name = new_name if new_name is not None else basename(latex_project_path)
     list_trees = []
     for latex_chapter_path in Path(latex_project_path).iterdir():
-        if latex_chapter_path.is_dir() and latex_chapter_path.name not in ['Appendice']:
+        if latex_chapter_path.is_dir() and latex_chapter_path.name not in ['Appendice', 'Avant-propos', 'Introduction']:
             list_trees += latex_chapter_to_list_trees(latex_chapter_path=latex_chapter_path,
                                                       repertoire_color=repertoire_color)
     list_trees_to_latex(original_list_trees=list_trees, granularity=new_granularity,

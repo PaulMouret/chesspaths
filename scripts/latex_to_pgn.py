@@ -39,7 +39,7 @@ def pgns_from_latex_project(latex_project_path, repertoire_color, new_pgn_dir, n
     """
     print(f"\n")  # for separating tasks well in the console
     for latex_chapter_path in Path(latex_project_path).iterdir():
-        if latex_chapter_path.is_dir() and latex_chapter_path.name not in ['Appendice']:
+        if latex_chapter_path.is_dir() and latex_chapter_path.name not in ['Appendice', 'Avant-propos', 'Introduction']:
             pgn_from_latex_chapter(latex_chapter_path, repertoire_color=repertoire_color, new_pgn_dir=new_pgn_dir,
                                    new_granularity=new_granularity, new_name=None,
                                    verbosity=verbosity)
