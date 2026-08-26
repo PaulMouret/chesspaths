@@ -210,7 +210,7 @@ def clean_chess_in_text(text):  # for LaTeX
                 elif skind == "bmove":
                     cleaned_rest_parsed_text.append(f"\\bmove{{{normalize_move(scontent)}}}")
                 else:
-                    cleaned_rest_parsed_text.append(normalize_move(scontent))
+                    cleaned_rest_parsed_text.append(scontent)
             clean_parsed_text.append("".join(cleaned_rest_parsed_text))
             #clean_parsed_text.append(content) is the easy way
     spaced_text = " ".join(clean_parsed_text)

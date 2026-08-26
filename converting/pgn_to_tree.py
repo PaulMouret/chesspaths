@@ -40,6 +40,7 @@ def pgn_to_list_trees(pgn_path, encoding="utf-8"):
             movetext = movetext.replace("\n", " ")  # linebreaks are useless in PGNs
             movetext = glue_move_numbers(movetext)  # for our parsing of moves to work
             # We parse the movetext
+            #print(f"movetext :\n{movetext}")
             try:
                 pgn_sequence_list = parse_movetext(movetext)
             except Exception as e:
@@ -50,7 +51,7 @@ def pgn_to_list_trees(pgn_path, encoding="utf-8"):
             try:
                 pgn_tree.init_from_pgn_sequence_list(pgn_sequence_list, source_pgn_name=pgn_identifier)
             except Exception as e:
-                raise RuntimeError(f"Error while creating Tree from {pgn_identifier}") from e
+                raise RuntimeError(f"Error while creating Tree from {pgn_identifier} :\n{str(e)}") from e
 
             list_trees.append(pgn_tree)
 
