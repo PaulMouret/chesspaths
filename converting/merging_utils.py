@@ -45,6 +45,13 @@ def merge_sections(list_trees):
     return final_list_trees
 
 
+def flat_trees(list_trees):
+    final_list = []
+    for tree in list_trees:
+        final_list += tree.get_flat_trees()
+    return final_list
+
+
 # The final util function
 def get_grained_list_trees(list_trees, granularity):
     # We convert the list_trees into the correct granularity
@@ -54,6 +61,8 @@ def get_grained_list_trees(list_trees, granularity):
         list_trees = merge_subsections(list_trees)
     elif granularity == "single":
         list_trees = [merged_tree_from_list(list_trees)]
+    elif granularity == "flat":
+        list_trees = flat_trees(list_trees)
     elif granularity != "all":
         raise Exception(f"Unknown granularity '{granularity}'")
     return list_trees

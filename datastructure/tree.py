@@ -16,7 +16,6 @@ class Node:
     comment: str | None = None
     parent: "Node | None" = None  # the preceding move
     children: list["Node"] = field(default_factory=list, init=False)
-
     # the list of possible next moves (as many as alternatives, the first is the mainline)
 
     @property
@@ -107,7 +106,8 @@ class Tree:
         # or passed as kwargs of pgn() method when called
 
     def update_headers(self, new_headers):
-        clean_new_headers = {(k.capitalize() if k != 'FEN' else k): unquote(v) for k, v in new_headers.items()}
+        # unquote(v) is not enough : to prevent any PGN reading problem, we should remove all " from header
+        clean_new_headers = {(k.capitalize() if k != 'FEN' else k): v.replace('"', '') for k, v in new_headers.items()}
         # We forbig empty strings, that may cause an error in LaTeX :
         for k, v in clean_new_headers.items():
             if v.strip() == "":
@@ -616,6 +616,7 @@ class Tree:
             color=node.color,
             move=node.move,
             comment=node.comment,
+            nag=node.nag
         )
 
         for child in node.children:
@@ -630,3 +631,45 @@ class Tree:
         copy_tree.headers = self.headers
         copy_tree.source_file = self.source_file
         return copy_tree
+
+    # For flattening the tree
+    def _tree_from_path(self, path):
+        """Create a flat Tree containing exactly the nodes in path."""
+        tree = Tree(repertoire_color=self.repertoire_color)
+        tree.headers = self.headers.copy()
+        tree.source_file = self.source_file
+
+        parent = tree.root
+
+        for node in path:
+            new_node = Node(
+                num=node.num,
+                color=node.color,
+                move=node.move,
+                nag=node.nag,
+                comment=node.comment,
+                parent=parent,
+            )
+            parent.children.append(new_node)
+            parent = new_node
+
+        return tree
+
+    def get_flat_trees(self):
+        """Return one flat Tree for every root-to-leaf branch."""
+        flat_trees = []
+
+        def visit(node, path):
+            path = path + [node]
+
+            if not node.children:
+                flat_trees.append(self._tree_from_path(path))
+                return
+
+            for child in node.children:
+                visit(child, path)
+
+        for child in self.root.children:
+            visit(child, [])
+
+        return flat_trees

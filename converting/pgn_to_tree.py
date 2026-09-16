@@ -15,7 +15,7 @@ def pgn_to_list_trees(pgn_path, encoding="utf-8"):
     elif pgn_path.is_dir():
         list_pgn_files = list_files(pgn_path, extension='.pgn')  # all .pgn files in the path (recursively)
     else:
-        raise Exception(f"pgn_path should be a folder or a .pgn file, but you speicified "
+        raise Exception(f"pgn_path should be a folder or a .pgn file, but you specified "
                         f"'{pgn_path}'")
 
     list_trees = []  # will contain the Tree objects, one for each game in .pgn files
@@ -29,10 +29,12 @@ def pgn_to_list_trees(pgn_path, encoding="utf-8"):
         for i_pgn, pgn_game in enumerate(pgn_list):
             pgn_tree = Tree()
             headers, movetext, result = parse_game(pgn_game)
+            source_pgn = Path(full_file_path).stem
             # We update headers
             if result:
                 headers.update({"Result": result})
             pgn_tree.update_headers(headers)
+            pgn_tree.update_headers({"Source": source_pgn})
             # We create an identifier name for the PGN to easily debug it :
             short_headers = f"{pgn_tree.headers['White']} - {pgn_tree.headers['Black']}"
             pgn_identifier = f"{full_file_path} - game {i_pgn + 1} - {short_headers}"

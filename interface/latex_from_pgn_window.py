@@ -190,6 +190,7 @@ def create_function_6_window(window):
         "chapter",
         "section",
         "single",
+        "flat",
         "all"
     ]
 

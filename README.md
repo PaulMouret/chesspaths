@@ -128,6 +128,7 @@ From there, the argument `granularity` controls how games are aggregated :
 | Exchange variation   | variation 4.c3 |
 
 - `single` : all games are merged into a single one.
+- `flat` : one game is created for each variation in each game.
 - `all` : the organization is preserved as it is.
 
 ### Example

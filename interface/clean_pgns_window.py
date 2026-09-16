@@ -201,6 +201,7 @@ def create_function_2_window(window):
         "chapter",
         "section",
         "single",
+        "flat",
         "all"
     ]
 

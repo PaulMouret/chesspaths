@@ -118,6 +118,8 @@ def list_trees_to_latex(original_list_trees, granularity,
             stuff_to_write += f"\n\\xskakset{{level=2}}\n" \
                               f"\\section{{{cleaned_section}}}\n"  # we remove the index of section
         stuff_to_write += f"\n{chapter_content}\n"
+        # We clean the stuff to write
+        stuff_to_write = stuff_to_write.replace(" }", "}").replace(" )", ")")
         # We actually write files
         with open(chapter_path, "a", encoding="utf-8") as f:
             f.write(stuff_to_write)

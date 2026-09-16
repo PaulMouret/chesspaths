@@ -34,10 +34,12 @@ def latex_chapter_to_list_trees(latex_chapter_path, repertoire_color):
         try:
             # We remove comments, since they might contain uncorrected text
             file_section = remove_comments(file_section)
-            # We remove the \textcolor{bleufonce}{} commands and their content, since they correspond to
-            # alternatives for my side
-            file_section = file_section.replace("textcolor{bleufonce}", "textcolor_bleufonce")
-            file_section = remove_command(file_section, "textcolor_bleufonce")
+            # In my LaTeX files, alternatives for my side are indicated in \textcolor{bleufonce}{}
+            # Since I do not want to include them as variations, I should either remove them :
+            # file_section = file_section.replace("textcolor{bleufonce}", "textcolor_bleufonce")
+            # file_section = remove_command(file_section, "textcolor_bleufonce")
+            # Or include them as comments :
+            file_section = file_section.replace("textcolor{bleufonce}{", "xskakcomment{[ALTERNATIVE]")
             # We expect the .tex files to be cleaned (manually, or using the cleaning_latex_files/ module) so that
             # (except possibly in the \textcolor{bleufonce}{} blocks, which have been previously removed)
             # the \variation{} commands only contain proper variations to store
@@ -78,6 +80,7 @@ def latex_chapter_to_list_trees(latex_chapter_path, repertoire_color):
                 section_tree = Tree(repertoire_color=repertoire_color)
                 headers = {'White': white_header, 'Black': black_header}
                 section_tree.update_headers(headers)
+                section_tree.update_headers({'Source': 'My LaTeX repertoire'})
                 section_tree.init_from_latex_sequence_list(latex_sequence_list, source_latex_name=latex_identifier)
                 list_trees.append(section_tree)
         except Exception as error:

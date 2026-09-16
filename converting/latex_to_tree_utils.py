@@ -3,6 +3,8 @@ from pathlib import Path
 import unicodedata
 import re
 
+from constants import *
+
 
 def remove_comments(text):
     return "\n".join(
@@ -54,6 +56,8 @@ def replace_variation_in_xskakcomment(text):
 
             # Replace only inside this content
             content = content.replace(r"\variation{", r"\varref{")
+            content = content.replace(r"\variation[invar]{", r"\varref{")
+            content = content.replace(r"\variation[outvar]{", r"\varref{")
 
             result.append(marker)
             result.append(content)
@@ -259,10 +263,15 @@ def cleaning_latex_comment(sequence):
     # We remove linebreaks
     sequence = sequence.replace("\n", " ")
     sequence = " ".join(sequence.split())  # to fix the multiple spacing the previous line may have introduced
+    # We only introduce linebreaks for "alternatives" (for our side, originating from \textcolor{bleufonce}
+    sequence = sequence.replace("[ALTERNATIVE]", "\n\n")
     # We remove variation parentheses :
     sequence = sequence.lstrip(")").rstrip("(")
     # We remove punctuation that would not make sense in a PGN
     sequence = sequence.strip(",").strip(";").strip(":")
+    # We replace the GAN notations in comments with symbolic notation :
+    for old, new in NAG_TO_SYMBOL.items():
+        sequence = sequence.replace(old, new)
     # We remove LaTeX linebreaks
     sequence = sequence.replace("\\\\", "")
     if not any(c.isalpha() for c in sequence):

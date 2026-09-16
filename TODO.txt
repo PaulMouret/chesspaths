@@ -1,3 +1,3 @@
 Pour la  génération de LaTeX :
-- quand répéertoire, automatiser \textcolorbleufonce{} pour les coups de notre couleur
+- quand répertoire, automatiser \textcolorbleufonce{} pour les coups de notre couleur
 (! faire attention à variante level)

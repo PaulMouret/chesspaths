@@ -246,6 +246,7 @@ def create_function_4_window(window):
         "chapter",
         "section",
         "single",
+        "flat",
         "all"
     ]
 
