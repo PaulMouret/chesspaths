@@ -1,10 +1,12 @@
 import os
+import hashlib
 
 from global_utils import is_trivial_pgn, formatted_text
 from converting.merging_utils import get_grained_list_trees
+from converting.pgn_to_tree_utils import parse_game
 
 
-def list_trees_to_pgn(list_trees, new_pgn_dir, new_pgn_name, granularity, verbosity=True):
+def list_trees_to_pgn(list_trees, new_pgn_dir, new_pgn_name, granularity, verbosity=True, remove_duplicates=False):
     # The granularity level is used to process list_trees :
     # from there the LaTeX structure will be automatically parsed from White and Black field
     # White = chapter name ; Black = section name, possibly followed by # subsection index
@@ -16,6 +18,14 @@ def list_trees_to_pgn(list_trees, new_pgn_dir, new_pgn_name, granularity, verbos
     # We convert the list_trees into the correct granularity
     list_trees = get_grained_list_trees(list_trees, granularity)
 
+    # Moreover, we want to avoid duplicates
+    # Note that, we talk about duplicates at move-level : indeed the flat granularity can produce duplicates,
+    # but with different headers, so we have to focus on move-level
+    # However in some cases we don't want to remove them (for instance in a course, a line of the quickstarter can be
+    # the same as a line of a chapter, and we don't want to alter the structure of the course),
+    # hence the boolean controlling it
+    seen = set()
+
     list_clean_pgns = []
     for tree in list_trees:
         try:
@@ -23,7 +33,15 @@ def list_trees_to_pgn(list_trees, new_pgn_dir, new_pgn_name, granularity, verbos
         except Exception as e:
             raise RuntimeError(f"Error while generating PGN from {tree.source_file}") from e
         if not is_trivial_pgn(tree_pgn):  # it is useless saving empty PGNs
-            list_clean_pgns.append(tree_pgn)
+            if remove_duplicates:
+                headers, movetext, result = parse_game(tree_pgn)  # cause we check duplicates at move/comments level
+                pgn_hash = hashlib.md5(movetext.encode()).digest()
+                if pgn_hash not in seen:
+                    list_clean_pgns.append(tree_pgn)
+                    seen.add(pgn_hash)
+            else:
+                list_clean_pgns.append(tree_pgn)
+
     new_pgn = "\n\n".join(list_clean_pgns)
     # We store the PGN :
     if not os.path.exists(new_pgn_dir):

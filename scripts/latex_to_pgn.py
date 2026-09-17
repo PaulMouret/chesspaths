@@ -23,7 +23,8 @@ def pgn_from_latex_chapter(latex_chapter_path, repertoire_color, new_pgn_dir, ne
     new_pgn_name = new_name if new_name is not None else basename(latex_chapter_path)
     list_trees = latex_chapter_to_list_trees(latex_chapter_path=latex_chapter_path, repertoire_color=repertoire_color)
     list_trees_to_pgn(list_trees=list_trees, new_pgn_dir=new_pgn_dir, new_pgn_name=new_pgn_name,
-                      granularity=new_granularity, verbosity=verbosity)
+                      granularity=new_granularity, verbosity=verbosity,
+                      remove_duplicates=(new_granularity == "flat"))
 
 
 def pgns_from_latex_project(latex_project_path, repertoire_color, new_pgn_dir, new_granularity, verbosity=True):

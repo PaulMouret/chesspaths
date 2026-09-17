@@ -24,7 +24,8 @@ def clean_pgn(pgn_path, clean_dir, new_granularity, new_name=None, encoding="utf
     new_pgn_name = new_name if new_name is not None else basename(pgn_path)
     list_trees = pgn_to_list_trees(pgn_path=pgn_path, encoding=encoding)
     list_trees_to_pgn(list_trees=list_trees, new_pgn_dir=clean_dir, new_pgn_name=new_pgn_name,
-                      granularity=new_granularity, verbosity=verbosity)
+                      granularity=new_granularity, verbosity=verbosity,
+                      remove_duplicates=(new_granularity == "flat"))
 
 
 def clean_pgns(global_pgn_path, clean_dir, new_granularity, encoding="utf-8", verbosity=True):
@@ -77,4 +78,5 @@ def expand_pgn(pgn_path, clean_dir, new_granularity, new_folder_name=None, encod
         else:
             dict_names[name_tree] = 1
         list_trees_to_pgn(list_trees=[tree], new_pgn_dir=new_pgn_dir, new_pgn_name=name_tree,
-                          granularity=new_granularity, verbosity=verbosity)
+                          granularity=new_granularity, verbosity=verbosity,
+                          remove_duplicates=(new_granularity == "flat"))
